@@ -42,16 +42,14 @@ User clicks tile → client emits `capture_tile` via WebSocket → server valida
 
 ## ⚡ Tech Stack & Why
 
-| Layer | Technology | Reason |
-|---|---|---|
-| Frontend framework | React 18 + Vite | Fast HMR, concurrent rendering, mature ecosystem |
-| State management | Zustand | Minimal boilerplate vs Redux; socket callbacks write directly into store |
-| Real-time | Socket.io | Battle-tested WS abstraction with fallback polling + reconnection |
-| Animations | Framer Motion | Declarative layout animations for leaderboard reordering; spring-based tile flash |
-| Styling | Tailwind + Vanilla CSS | Tailwind for utilities; custom CSS vars for the full design system |
-| Backend | Node.js + Express | Lightweight, non-blocking, native WS support |
-| Persistence | Redis / In-Memory Map | O(1) tile reads; 2500 tiles ≈ 250KB — fits comfortably in Redis free tier |
-| Logging | Pino | Structured JSON in production; pretty-printed in dev |
+- **Frontend:** React 18 + Vite — Fast HMR, concurrent rendering, mature ecosystem
+- **State Management:** Zustand — Minimal boilerplate vs Redux; socket callbacks write directly into store
+- **Real-time:** Socket.io — Battle-tested WS abstraction with fallback polling + reconnection
+- **Animations:** Framer Motion — Declarative layout animations for leaderboard reordering; spring-based tile flash
+- **Styling:** Tailwind + Vanilla CSS — Tailwind for utilities; custom CSS vars for the full design system
+- **Backend:** Node.js + Express — Lightweight, non-blocking, native WS support
+- **Persistence:** Redis / In-Memory Map — O(1) tile reads; 2500 tiles ≈ 250KB fits comfortably in Redis free tier
+- **Logging:** Pino — Structured JSON in production; pretty-printed in dev
 
 ---
 
