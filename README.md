@@ -91,42 +91,6 @@ Open `http://localhost:5173` in **two browser tabs**. Enter different usernames,
 
 ---
 
-## 🌍 Production Deployment
-
-The app is built to be deployed on a free-tier friendly modern stack. Follow these exact steps:
-
-### 1. Database: Redis Cloud
-1. Create a free account at [Redis Cloud](https://redis.com/try-free/).
-2. Create a new subscription (Free 30MB tier).
-3. Find your **Public Endpoint** and **Password** in the database configuration.
-4. Construct your Redis URL: `redis://default:YOUR_PASSWORD@YOUR_PUBLIC_ENDPOINT:PORT`.
-
-### 2. Backend: Railway
-1. Push your `territoria` repository to GitHub.
-2. Go to [Railway.app](https://railway.app/) and create a **New Project** → **Deploy from GitHub repo**.
-3. Go to Settings > Build > **Root Directory** and set it to `/server`.
-4. Go to **Variables** and add:
-   - `PORT`: `3001`
-   - `REDIS_URL`: *(Your Redis Cloud URL from Step 1)*
-   - `CLIENT_URL`: *(Leave blank for now)*
-5. Go to Settings > Public Networking and click **Generate Domain** (e.g., `https://territoria-server.up.railway.app`).
-
-### 3. Frontend: Vercel
-1. Go to [Vercel.com](https://vercel.com/) and click **Add New Project**.
-2. Import your `territoria` GitHub repository.
-3. In the project configuration:
-   - **Framework Preset**: Vite
-   - **Root Directory**: `client`
-4. Expand **Environment Variables** and add:
-   - `VITE_SERVER_URL`: *(Your Railway Domain from Step 2)*
-5. Click **Deploy**. Vercel will give you a live URL (e.g., `https://territoria-client.vercel.app`).
-
-### 4. Final Connection
-1. Go back to your **Railway** dashboard.
-2. Update the `CLIENT_URL` environment variable to match your new Vercel URL.
-3. Railway will automatically restart. Your app is now fully live!
-
----
 
 ## 🎮 How It Works
 
@@ -146,58 +110,6 @@ Redis stores each tile as a hash field: `grid → tile_{x}_{y} = JSON`. On first
 
 ---
 
-## ⚖️ Trade-offs Made
-
-### Redis vs PostgreSQL
-Redis was chosen because:
-- Tile data is write-heavy (every capture = 1 write, 1 broadcast)
-- No relational queries needed — tiles are independent key-value entries
-- Sub-millisecond reads/writes critical for real-time feel
-- 2500 tiles × ~100 bytes = 250KB — trivially fits in Redis free tier (30MB)
-
-PostgreSQL would be better for: persistent user accounts, audit trails, complex queries across game history.
-
-### No Auth vs Sessions
-Users are identified by socket ID (server-assigned) + localStorage (color/username persistence across refreshes). This keeps onboarding friction to zero — you land, pick a name, you're playing. For production: add JWT auth + persistent user accounts to maintain territory across sessions.
-
-### In-Memory Cooldowns
-Cooldowns are a `Map<socketId, timestamp>` on the server. This is simple and fast, but **breaks under horizontal scaling** — a second server instance has no knowledge of cooldowns set by the first.
-
-**Fix at scale:** Store cooldowns as Redis keys with TTL:
-```js
-await redis.set(`cooldown:${socketId}`, 1, 'PX', COOLDOWN_MS);
-const onCooldown = await redis.exists(`cooldown:${socketId}`);
-```
-
----
-
-## 🌟 Bonus Features
-
-| Feature | Description |
-|---|---|
-| **Cooldown bar** | rAF-driven smooth progress bar; shakes when user clicks during cooldown |
-| **Live leaderboard** | Top-10 with Framer Motion layout animations on rank changes; crown on #1 |
-| **Activity feed** | Last 20 events (captures, joins, leaves) with opacity fade on older entries |
-| **Territory stats** | Header shows "You own X tiles (Y%)" — updates live with every capture |
-| **Toast notifications** | Slide-in success/info/error toasts; auto-dismiss 2.5s |
-| **Online counter** | Animated number flip when user count changes |
-| **In-memory fallback** | Server works with zero Redis config — transparent fallback |
-| **Reconnection** | Socket.io auto-reconnects with exponential backoff |
-| **Error boundary** | React error boundary catches render crashes gracefully |
-
----
-
-## 📈 What I'd Improve With More Time
-
-1. **Persistent accounts** — JWT auth + PostgreSQL for cross-session territory retention
-2. **Tile locking / area control** — capture bonus for controlling entire regions
-3. **WebRTC cursor presence** — see other users' cursors moving in real-time
-4. **Horizontal scaling** — Redis pub/sub for multi-server Socket.io (socket.io-redis adapter)
-5. **Spectator mode** — read-only view with highlighted player tracking
-6. **Replay system** — Redis Streams to record and replay game history
-7. **Rate limit per user** — Redis token bucket per socket (not just IP-based)
-
----
 
 ## 📁 Project Structure
 
