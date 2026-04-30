@@ -1,0 +1,25 @@
+{
+  "name": "territoria-server",
+  "version": "1.0.0",
+  "description": "TERRITORIA real-time territory grid — backend",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "ioredis": "^5.3.2",
+    "pino": "^9.2.0",
+    "pino-pretty": "^11.2.1",
+    "socket.io": "^4.7.5",
+    "uuid": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
