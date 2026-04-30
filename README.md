@@ -4,7 +4,7 @@
 
 ## 🔗 Live Demo
 
-*Deploy to Railway + Vercel using the instructions below.*
+https://territoria-blond.vercel.app
 
 ---
 
